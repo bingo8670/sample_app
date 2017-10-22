@@ -36,14 +36,34 @@ class User < ApplicationRecord
 
   # 如果指定的令牌和摘要匹配，返回 true
   def authenticated?(remember_token)
-    return false if remember_digest.nil?
+    digest = self.send("remember_digest")
+    return false if digest.nil?
     BCrypt::Password.new(remember_digest).is_password?(remember_token)
+  end
+
+  # 如果指定的令牌和摘要匹配，返回 true
+  def authenticated?(attribute, token)
+    digest = send("#{attribute}_digest")
+    return false if digest.nil?
+    BCrypt::Password.new(digest).is_password?(token)
   end
 
   # 忘记用户
   def forget
     update_attribute(:remember_digest, nil)
   end
+
+  # 激活账户
+  def activate
+    update_attribute(:activated,    true)
+    update_attribute(:activated_at, Time.zone.now)
+  end
+
+  # 发送激活邮件
+  def send_activation_email
+    UserMailer.account_activation(self).deliver_now
+  end
+
 
   private
     #把电子邮件地址转换成小写
@@ -56,4 +76,5 @@ class User < ApplicationRecord
       self.activation_token = User.new_token
       self.activation_token = User.digest(activation_token)
     end
+
 end
