@@ -78,7 +78,7 @@ class User < ApplicationRecord
 
   # 如果密码重设请求超时了， 返回 true
   def password_reset_expired?
-    reset_sent_at < 2.hour.ago
+    reset_sent_at < 2.hours.ago
   end
 
 
