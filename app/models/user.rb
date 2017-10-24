@@ -15,17 +15,15 @@ class User < ApplicationRecord
   has_secure_password
   validates :password, presence: true, length: { minimum: 6 }, allow_nil: true
 
-  class << self
     # 返回指定字符串的哈希摘要
-    def digest(string)
-      cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
-                                                    BCrypt::Engine.cost
-      BCrypt::Password.create(string, cost: cost)
-    end
+  def User.digest(string)
+    cost = ActiveModel::SecurePassword.min_cost ? BCrypt::Engine::MIN_COST :
+                                                  BCrypt::Engine.cost
+    BCrypt::Password.create(string, cost: cost)
+  end
     # 返回一个随机令牌
-    def new_token
-      SecureRandom.urlsafe_base64
-    end
+  def self.new_token
+    SecureRandom.urlsafe_base64
   end
 
   #为了持久保存会话，在数据库中记住用户
@@ -91,7 +89,7 @@ class User < ApplicationRecord
     #创建并赋值激活令牌和摘要
     def create_activation_digest
       self.activation_token = User.new_token
-      self.activation_token = User.digest(activation_token)
+      self.activation_digest = User.digest(activation_token)
     end
 
 end
