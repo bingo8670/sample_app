@@ -10,7 +10,7 @@ class Micropost < ApplicationRecord
 
     # 验证上传的图像大小
     def picture_size
-      if picture_size > 5.megabytes
+      if picture.size > 5.megabytes
         errors.add(:picture, "should be less than 5MB")
       end
     end
