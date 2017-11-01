@@ -91,12 +91,12 @@ class User < ApplicationRecord
 
   # 实现动态流原型
   def feed
-    Micropost.where("user_id = ?", id )
+    Micropost.where("user_id IN (?) OR user_id = ?", following_ids, id)
   end
 
   # 关注另一个用户
   def follow(other_user)
-    following << other_user
+    active_relationships.create(followed_id: other_user.id)
   end
 
   # 取消关注另一个用户
